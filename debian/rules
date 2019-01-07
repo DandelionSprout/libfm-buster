@@ -1,0 +1,64 @@
+#!/usr/bin/make -f
+
+DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
+
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+ifneq ($(filter stage1,$(DEB_BUILD_PROFILES)),)
+CONFIGURE_OPTIONS = --with-extra-only
+else
+CONFIGURE_OPTIONS = --enable-udisks
+ifeq ($(filter nodoc,$(DEB_BUILD_OPTIONS)),)
+ifneq ($(filter libfm-doc,$(shell dh_listpackages)),)
+CONFIGURE_OPTIONS += --enable-gtk-doc
+endif
+endif
+endif
+
+%:
+	dh ${@}
+
+override_dh_auto_configure:
+	dh_auto_configure -- $(CONFIGURE_OPTIONS)
+
+override_dh_auto_install:
+	dh_auto_install
+
+	# split extra headers
+	mkdir -p debian/libfm-extra-dev/usr/include/libfm-1.0
+	for file in fm-extra.h fm-version.h fm-xml-file.h; do \
+		mv debian/tmp/usr/include/libfm-1.0/$$file debian/libfm-extra-dev/usr/include/libfm-1.0/; \
+	done
+
+	# removing unused files
+	rm -f debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/*.a
+	rm -f debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/*.la
+
+override_dh_install:
+ifneq ($(filter nodoc,$(DEB_BUILD_OPTIONS)),)
+	# in nodoc mode no documentation will be installed
+	mkdir -p debian/tmp/usr/share/gtk-doc/html/libfm
+endif
+	dh_install --fail-missing
+
+override_dh_installchangelogs:
+	dh_installchangelogs NEWS
+
+override_dh_makeshlibs:
+	# modules are not shared libs so disable processing for them
+	dh_makeshlibs -X/modules/
+
+override_dh_auto_clean:
+	test -f docs/Makefile && cd docs && $(MAKE) distclean || true
+	dh_auto_clean
+
+ifneq ($(filter stage1,$(DEB_BUILD_PROFILES)),)
+override_dh_auto_test:
+	# will not work for stage1
+else
+override_dh_strip:
+	dh_strip -plibfm4 -plibfm-extra4 --dbg-package=libfm-dbg
+	dh_strip -plibfm-gtk4 --dbg-package=libfm-gtk-dbg
+	dh_strip -plibfm-modules --dbg-package=libfm-modules-dbg
+	dh_strip -Nlibfm4 -Nlibfm-extra4 -Nlibfm-gtk4 -Nlibfm-modules
+endif

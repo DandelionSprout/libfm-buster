@@ -1,0 +1,3 @@
+usr/include/libfm-1.0
+usr/lib/*/libfm.so
+usr/lib/*/pkgconfig/libfm.pc
