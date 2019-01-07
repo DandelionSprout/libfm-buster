@@ -207,7 +207,7 @@ void            fm_folder_view_bounce_action(GtkAction* act, FmFolderView* fv);
 
 /* emit signals; for interface implementations only */
 void            fm_folder_view_item_clicked(FmFolderView* fv, GtkTreePath* path,
-                                            FmFolderViewClickType type);
+                                            FmFolderViewClickType type, gint icon_or_label);
 void            fm_folder_view_sel_changed(GObject* obj, FmFolderView* fv);
 void            fm_folder_view_columns_changed(FmFolderView* fv);
 //void            fm_folder_view_chdir(FmFolderView* fv, FmPath* path);

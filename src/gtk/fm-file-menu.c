@@ -256,6 +256,8 @@ static gboolean on_key_released(GtkWidget *widget, GdkEventKey *event, FmFileMen
     GtkAction *act;
     GdkModifierType mask = 0;
 
+    const char *mtt = _("Move to _Trash");
+
     gdk_window_get_device_position (gtk_widget_get_window(widget),
                                     gdk_device_manager_get_client_pointer(
                                         gdk_display_get_device_manager(
@@ -269,7 +271,7 @@ static gboolean on_key_released(GtkWidget *widget, GdkEventKey *event, FmFileMen
             data->shift_pressed = FALSE;
             act = gtk_ui_manager_get_action(data->ui, "/popup/Del");
             /* Note to translators: Trash in not noun but verb here */
-            gtk_action_set_label(act, _("Move to _Trash"));
+            gtk_action_set_label(act, mtt);
             gtk_action_set_stock_id(act, GTK_STOCK_DELETE);
         }
     }
@@ -302,6 +304,7 @@ FmFileMenu* fm_file_menu_new_for_files(GtkWindow* parent, FmFileInfoList* files,
     GList* apps = NULL;
     gboolean all_native = TRUE;
     unsigned items_num = fm_file_info_list_get_length(files);
+    const char *mtt = _("Move to _Trash");
 
     data->file_infos = fm_file_info_list_ref(files);
 
@@ -530,7 +533,7 @@ _disable_open:
         g_signal_connect(data->menu, "key-press-event", G_CALLBACK(on_key_pressed), data);
         g_signal_connect(data->menu, "key-release-event", G_CALLBACK(on_key_released), data);
         act = gtk_ui_manager_get_action(ui, "/popup/Del");
-        gtk_action_set_label(act, _("Move to _Trash"));
+        gtk_action_set_label(act, mtt);
     }
 
     g_string_free(xml, TRUE);

@@ -70,6 +70,7 @@ typedef struct _FmConfigClass       FmConfigClass;
 #define     FM_CONFIG_DEFAULT_DEFER_CONTENT_TEST FALSE
 #define     FM_CONFIG_DEFAULT_QUICK_EXEC        FALSE
 #define     FM_CONFIG_DEFAULT_SMART_DESKTOP_AUTODROP TRUE
+#define     FM_CONFIG_DEFAULT_CUTDOWN_MENUS     FALSE
 
 #define     FM_CONFIG_DEFAULT_PLACES_HOME       TRUE
 #define     FM_CONFIG_DEFAULT_PLACES_DESKTOP    TRUE
@@ -195,6 +196,7 @@ struct _FmConfig
     gboolean template_type_once;
     gboolean defer_content_test;
     gboolean quick_exec;
+    gboolean cutdown_menus;
 
     gchar **modules_blacklist;
     gchar **modules_whitelist;
@@ -207,6 +209,7 @@ struct _FmConfig
 
     gboolean smart_desktop_autodrop;
     gchar *saved_search;
+    gchar *icon_font;
     /*< private >*/
     gpointer _reserved1; /* reserved space for updates until next ABI */
     gpointer _reserved2;

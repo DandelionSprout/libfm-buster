@@ -96,6 +96,7 @@ static void add_menu_items(GtkTreeIter* parent_it, MenuCacheDir* dir)
             case MENU_CACHE_TYPE_SEP:
                 break;
             case MENU_CACHE_TYPE_APP:
+                if (!menu_cache_app_get_is_visible (MENU_CACHE_APP(item), SHOW_IN_LXDE)) break;
             case MENU_CACHE_TYPE_DIR:
                 if(menu_cache_item_get_icon(item))
                     gicon = G_ICON(fm_icon_from_name(menu_cache_item_get_icon(item)));

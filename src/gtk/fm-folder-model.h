@@ -173,6 +173,8 @@ gboolean fm_folder_model_get_sort(FmFolderModel* model, FmFolderModelCol *col, F
 
 /* void fm_folder_model_set_thumbnail_size(FmFolderModel* model, guint size); */
 
+void fm_folder_model_show_thumbnails(FmFolderModel* model, gboolean show);
+
 /**
  * FmFolderModelExtraFilePos:
  * @FM_FOLDER_MODEL_ITEMPOS_SORTED: insert extra item into main sorted list

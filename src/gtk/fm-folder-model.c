@@ -67,6 +67,7 @@ struct _FmFolderModel
 
     guint theme_change_handler;
     guint icon_size;
+    gboolean show_thumbs;
 
     guint thumbnail_max;
     GList* thumbnail_requests;
@@ -227,6 +228,7 @@ static void fm_folder_model_init(FmFolderModel* model)
 
     model->thumbnail_max = fm_config->thumbnail_max << 10;
     model->items_hash = g_hash_table_new(g_direct_hash, g_direct_equal);
+    model->show_thumbs = TRUE;
 }
 
 static void fm_folder_model_class_init(FmFolderModelClass *klass)
@@ -741,7 +743,10 @@ static void fm_folder_model_get_value(GtkTreeModel *tree_model,
 
         /* if we want to show a thumbnail */
         /* if we're on local filesystem or thumbnailing for remote files is allowed */
-        if(fm_config->show_thumbnail && (fm_path_is_native_or_trash(fm_file_info_get_path(info)) || !fm_config->thumbnail_local))
+        gboolean thumbs;
+        if (fm_config->cutdown_menus) thumbs = model->show_thumbs;
+        else thumbs = fm_config->show_thumbnail;
+        if(thumbs && (fm_path_is_native_or_trash(fm_file_info_get_path(info)) || !fm_config->thumbnail_local))
         {
             if(!item->is_thumbnail && !item->thumbnail_failed && !item->thumbnail_loading)
             {
@@ -1628,8 +1633,6 @@ static void on_thumbnail_loaded(FmThumbnailRequest* req, gpointer user_data)
  */
 void fm_folder_model_set_icon_size(FmFolderModel* model, guint icon_size)
 {
-    if(model->icon_size == icon_size)
-        return;
     model->icon_size = icon_size;
     reload_icons(model, RELOAD_BOTH);
 }
@@ -1647,6 +1650,11 @@ void fm_folder_model_set_icon_size(FmFolderModel* model, guint icon_size)
 guint fm_folder_model_get_icon_size(FmFolderModel* model)
 {
     return model->icon_size;
+}
+
+void fm_folder_model_show_thumbnails(FmFolderModel* model, gboolean show)
+{
+    model->show_thumbs = show;
 }
 
 static void on_show_thumbnail_changed(FmConfig* cfg, gpointer user_data)

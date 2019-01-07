@@ -610,7 +610,7 @@ msgstr "Network"
 
 #: ../src/base/fm-path.c:1316 ../src/gtk/fm-places-model.c:898
 msgid "Trash Can"
-msgstr "Rubbish Bin"
+msgstr "Wastebasket"
 
 #: ../src/base/fm-mime-type.c:89
 msgid "shortcut to URI"
@@ -850,9 +850,8 @@ msgstr "Prop_erties"
 
 #. Note to translators: Trash in not noun but verb here
 #: ../src/gtk/fm-file-menu.c:272 ../src/gtk/fm-file-menu.c:533
-#, fuzzy
 msgid "Move to _Trash"
-msgstr "Rubbish"
+msgstr "Move to Waste_basket"
 
 #: ../src/gtk/fm-file-menu.c:794
 msgid "Your bookmarks already have a bookmark for this folder."
@@ -1098,14 +1097,14 @@ msgstr "Only system administrators have the permission to do this."
 #: ../src/gtk/fm-gtk-utils.c:924
 #, c-format
 msgid "Do you want to move the file '%s' to trash can?"
-msgstr "Do you want to move the file '%s' to rubbish bin?"
+msgstr "Do you want to move the file '%s' to the Wastebasket?"
 
 #: ../src/gtk/fm-gtk-utils.c:929
 #, c-format
 msgid "Do you want to move the %d selected file to trash can?"
 msgid_plural "Do you want to move the %d selected files to trash can?"
-msgstr[0] "Do you want to move the %d selected file to rubbish bin?"
-msgstr[1] "Do you want to move the %d selected files to rubbish bin?"
+msgstr[0] "Do you want to move the %d selected file to the Wastebasket?"
+msgstr[1] "Do you want to move the %d selected files to the Wastebasket?"
 
 #: ../src/gtk/fm-gtk-utils.c:989
 #, c-format
@@ -1129,7 +1128,7 @@ msgstr "Please enter a new name:"
 
 #: ../src/gtk/fm-gtk-utils.c:1166
 msgid "Are you sure you want to empty the trash can?"
-msgstr "Are you sure you want to empty the Rubbish Bin?"
+msgstr "Are you sure you want to empty the Wastebasket?"
 
 #: ../src/gtk/fm-path-entry.c:675
 msgid "Pa_ste and Go"
@@ -1195,7 +1194,7 @@ msgstr "Move Bookmark _Down"
 #: ../src/gtk/fm-places-view.c:166 ../src/modules/gtk-menu-trash.c:87
 #: ../src/modules/gtk-menu-trash.c:114
 msgid "_Empty Trash Can"
-msgstr "_Empty Rubbish Bin"
+msgstr "_Empty Wastebasket"
 
 #: ../src/gtk/fm-places-view.c:533 ../src/gtk/fm-side-pane.c:645
 msgid "Shows list of common places, devices, and bookmarks in sidebar"
@@ -1257,7 +1256,7 @@ msgid ""
 "don't support this operation.\n"
 "Do you want to delete them instead?"
 msgstr ""
-"Some files cannot be moved to the rubbish bin because the underlying file "
+"Some files cannot be moved to the Wastebasket because the underlying file "
 "systems don’t support this operation.\n"
 "Do you want to delete them instead?"
 
@@ -1289,7 +1288,7 @@ msgstr "Copying files"
 #: ../src/gtk/fm-progress-dlg.c:625
 #, fuzzy
 msgid "Trashing"
-msgstr "Transferring to Rubbish Bin"
+msgstr "Moving to Wastebasket"
 
 #. translators: it is part of "Deleting files:" or "Deleting xxx.txt"
 #: ../src/gtk/fm-progress-dlg.c:629

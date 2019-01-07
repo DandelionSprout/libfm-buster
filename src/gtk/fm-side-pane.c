@@ -41,6 +41,7 @@
 #include "fm-dir-tree-model.h"
 #include "fm-dir-tree-view.h"
 #include "fm-file-info-job.h"
+#include "fm-config.h"
 
 #include <glib/gi18n-lib.h>
 
@@ -51,7 +52,6 @@ enum
     N_SIGNALS
 };
 static guint signals[N_SIGNALS];
-static FmDirTreeModel* dir_tree_model = NULL;
 
 static char menu_xml[] =
 "<popup>"
@@ -233,7 +233,7 @@ static void fm_side_pane_init(FmSidePane *sp)
 
     sp->scroll = gtk_scrolled_window_new(NULL, NULL);
 
-    gtk_box_pack_start(GTK_BOX(sp), sp->title_bar, FALSE, TRUE, 0);
+    if (!fm_config->cutdown_menus) gtk_box_pack_start(GTK_BOX(sp), sp->title_bar, FALSE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(sp), sp->scroll, TRUE, TRUE, 0);
     gtk_widget_show_all(GTK_WIDGET(sp));
 }
@@ -370,15 +370,11 @@ static void fm_side_pane_dispose(GObject *object)
 
 static void init_dir_tree(FmSidePane* sp)
 {
-    if(dir_tree_model)
-        g_object_ref(dir_tree_model);
-    else
-    {
         FmFileInfoJob* job = fm_file_info_job_new(NULL, FM_FILE_INFO_JOB_NONE);
         GList* l;
         /* query FmFileInfo for home dir and root dir, and then,
          * add them to dir tree model */
-        fm_file_info_job_add(job, fm_path_get_home());
+        if (!fm_config->cutdown_menus) fm_file_info_job_add(job, fm_path_get_home());
         fm_file_info_job_add(job, fm_path_get_root());
 
         /* FIXME: maybe it's cleaner to use run_async here? */
@@ -386,7 +382,7 @@ static void init_dir_tree(FmSidePane* sp)
         fm_job_run_sync_with_mainloop(FM_JOB(job));
         GDK_THREADS_ENTER();
 
-        dir_tree_model = fm_dir_tree_model_new();
+        FmDirTreeModel* dir_tree_model = fm_dir_tree_model_new();
         for(l = fm_file_info_list_peek_head_link(job->file_infos); l; l = l->next)
         {
             FmFileInfo* fi = FM_FILE_INFO(l->data);
@@ -394,8 +390,6 @@ static void init_dir_tree(FmSidePane* sp)
         }
         g_object_unref(job);
 
-        g_object_add_weak_pointer((GObject*)dir_tree_model, (gpointer*)&dir_tree_model);
-    }
     gtk_tree_view_set_model(GTK_TREE_VIEW(sp->view), GTK_TREE_MODEL(dir_tree_model));
     g_object_unref(dir_tree_model);
 }

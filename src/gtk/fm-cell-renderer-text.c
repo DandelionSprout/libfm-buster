@@ -31,6 +31,7 @@
  * The #FmCellRendererText can be used to render text in cell.
  */
 
+#include "fm-config.h"
 #include "fm-cell-renderer-text.h"
 
 static void fm_cell_renderer_text_get_property(GObject *object, guint param_id,
@@ -303,6 +304,12 @@ static void fm_cell_renderer_text_render(GtkCellRenderer *cell,
      *        if we want to fix this, we must implement the whole cell
      *        renderer ourselves instead of derived from GtkCellRendererText. */
     PangoContext* context = gtk_widget_get_pango_context(widget);
+
+    if (fm_config->icon_font)
+    {
+        PangoFontDescription *fontdes = pango_font_description_from_string (fm_config->icon_font);
+        if (fontdes) pango_context_set_font_description (context, fontdes);
+    }
 
     PangoLayout* layout = pango_layout_new(context);
 

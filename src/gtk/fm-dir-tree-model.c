@@ -242,6 +242,12 @@ static void on_theme_changed(GtkIconTheme* theme, FmDirTreeModel* model)
     gtk_tree_path_free(tp);
 }
 
+static void on_pane_icon_size_changed(FmConfig* cfg, gpointer user_data)
+{
+    FmDirTreeModel* model = FM_DIR_TREE_MODEL(user_data);
+    fm_dir_tree_model_set_icon_size (model, fm_config->pane_icon_size);
+}
+
 static void fm_dir_tree_model_dispose(GObject *object)
 {
     FmDirTreeModel *model;
@@ -253,6 +259,8 @@ static void fm_dir_tree_model_dispose(GObject *object)
 
     g_signal_handlers_disconnect_by_func(gtk_icon_theme_get_default(),
                                          on_theme_changed, model);
+    if (fm_config->cutdown_menus)
+        g_signal_handlers_disconnect_by_func (fm_config, on_pane_icon_size_changed, model);
 
     if(model->roots)
     {
@@ -270,6 +278,13 @@ static void fm_dir_tree_model_init(FmDirTreeModel *model)
 {
     g_signal_connect(gtk_icon_theme_get_default(), "changed",
                      G_CALLBACK(on_theme_changed), model);
+
+    if (fm_config->cutdown_menus)
+    {
+        g_signal_connect(fm_config, "changed::pane_icon_size", G_CALLBACK(on_pane_icon_size_changed), model);
+        model->icon_size = fm_config->pane_icon_size;
+    }
+    else
     model->icon_size = 16;
     model->stamp = g_random_int();
     /* TODO:
@@ -1072,6 +1087,7 @@ void fm_dir_tree_model_set_icon_size(FmDirTreeModel* model, guint icon_size)
 {
     if(model->icon_size != icon_size)
     {
+        model->icon_size = icon_size;
         /* reload existing icons */
         GtkTreePath* tp = gtk_tree_path_new_first();
         GList* l;

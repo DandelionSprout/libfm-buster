@@ -268,7 +268,8 @@ gint                  exo_icon_view_count_selected_items      (const ExoIconView
 void                  exo_icon_view_select_all                (ExoIconView              *icon_view);
 void                  exo_icon_view_unselect_all              (ExoIconView              *icon_view);
 void                  exo_icon_view_item_activated            (ExoIconView              *icon_view,
-                                                               GtkTreePath              *path);
+                                                               GtkTreePath              *path,
+                                                               gint                      icon_or_label);
 
 gboolean              exo_icon_view_get_cursor                (const ExoIconView        *icon_view,
                                                                GtkTreePath             **path,

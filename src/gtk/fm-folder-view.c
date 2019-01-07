@@ -1192,9 +1192,11 @@ static void on_menu(GtkAction* act, FmFolderView* fv)
     act = gtk_ui_manager_get_action(ui, "/popup/Sort/SortIgnoreCase");
     gtk_toggle_action_set_active(GTK_TOGGLE_ACTION(act),
                                  (mode & FM_SORT_CASE_SENSITIVE) == 0);
+    if (fm_config->cutdown_menus) gtk_action_set_visible (act, FALSE);
     act = gtk_ui_manager_get_action(ui, "/popup/Sort/MingleDirs");
     gtk_toggle_action_set_active(GTK_TOGGLE_ACTION(act),
                                  (mode & FM_SORT_NO_FOLDER_FIRST) != 0);
+    if (fm_config->cutdown_menus) gtk_action_set_visible (act, FALSE);
     show_hidden = iface->get_show_hidden(fv);
     act = gtk_ui_manager_get_action(ui, "/popup/ShowHidden");
     gtk_toggle_action_set_active(GTK_TOGGLE_ACTION(act), show_hidden);
@@ -1217,6 +1219,9 @@ static void on_menu(GtkAction* act, FmFolderView* fv)
         act = gtk_ui_manager_get_action(ui, "/popup/Prop");
         gtk_action_set_visible(act, FALSE);
     }
+    act = gtk_ui_manager_get_action(ui, "/popup/Prop");
+    if (fm_config->cutdown_menus) gtk_action_set_visible (act, FALSE);
+
     /* prepare templates list */
     templates = g_object_get_qdata(G_OBJECT(ui), templates_quark);
     /* FIXME: updating context menu is not lightweight here - we should
@@ -1725,7 +1730,7 @@ void fm_folder_view_set_active(FmFolderView* fv, gboolean set)
  * Since: 1.0.1
  */
 void fm_folder_view_item_clicked(FmFolderView* fv, GtkTreePath* path,
-                                 FmFolderViewClickType type)
+                                 FmFolderViewClickType type, gint icon_or_label)
 {
     FmFolderViewInterface* iface;
     GtkTreeModel* model;
@@ -1766,6 +1771,12 @@ void fm_folder_view_item_clicked(FmFolderView* fv, GtkTreePath* path,
             files = fm_file_info_list_new();
             fm_file_info_list_push_tail(files, fi);
         }
+        if (icon_or_label)
+        {
+            if (fm_file_info_can_set_name(fi) && !fm_file_info_is_shortcut(fi) && !fm_file_info_is_desktop_entry(fi))
+                fm_rename_file(GTK_WINDOW(win), fm_file_info_get_path(fi));
+        }
+        else
         fm_launch_files_simple(win, NULL, fm_file_info_list_peek_head_link(files),
                                open_folders, win);
         fm_file_info_list_unref(files);

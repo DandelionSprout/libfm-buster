@@ -198,6 +198,7 @@ static void fm_dir_tree_view_item_popup(GtkWidget *widget, GtkTreeModel *model,
     if (!gtk_widget_is_toplevel(win)) /* no parent window! is it possible? */
         return;
     file = fm_dir_tree_row_get_file_info(FM_DIR_TREE_MODEL(model), it);
+    if (!file) return;
     file_list = fm_file_info_list_new();
     fm_file_info_list_push_tail(file_list, file);
     /* use FmFileMenu here, just without extensions and disable all
@@ -647,7 +648,7 @@ static void on_row_loaded(FmDirTreeModel* fm_model, GtkTreePath* tp, FmDirTreeVi
         GtkTreeSelection* ts = gtk_tree_view_get_selection(GTK_TREE_VIEW(view));
         gtk_tree_selection_select_path(ts, tp);
         gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(view), tp, NULL, TRUE, 0.5, 0.5);
-        gtk_tree_view_set_cursor(GTK_TREE_VIEW(view), tp, NULL, FALSE);
+        //gtk_tree_view_set_cursor(GTK_TREE_VIEW(view), tp, NULL, FALSE);  //!!!!!!
     }
 }
 

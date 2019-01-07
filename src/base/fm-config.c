@@ -43,6 +43,7 @@
 #include "fm-config.h"
 #include "fm-utils.h"
 #include <stdio.h>
+#include <string.h>
 
 enum
 {
@@ -127,6 +128,7 @@ static void fm_config_finalize(GObject *object)
     g_free(cfg->format_cmd);
     g_free(cfg->list_view_size_units);
     g_free(cfg->saved_search);
+    if (cfg->icon_font) g_free(cfg->icon_font);
 
     G_OBJECT_CLASS(fm_config_parent_class)->finalize(object);
 }
@@ -175,6 +177,7 @@ static void fm_config_init(FmConfig *self)
     self->places_network = FM_CONFIG_DEFAULT_PLACES_NETWORK;
     self->places_unmounted = FM_CONFIG_DEFAULT_PLACES_UNMOUNTED;
     self->smart_desktop_autodrop = FM_CONFIG_DEFAULT_SMART_DESKTOP_AUTODROP;
+    self->cutdown_menus = FM_CONFIG_DEFAULT_CUTDOWN_MENUS;
 }
 
 /**
@@ -285,6 +288,7 @@ void fm_config_load_from_key_file(FmConfig* cfg, GKeyFile* kf)
     fm_key_file_get_bool(kf, "config", "defer_content_test", &cfg->defer_content_test);
     fm_key_file_get_bool(kf, "config", "quick_exec", &cfg->quick_exec);
     fm_key_file_get_bool(kf, "config", "smart_desktop_autodrop", &cfg->smart_desktop_autodrop);
+    fm_key_file_get_bool(kf, "config", "cutdown_menus", &cfg->cutdown_menus);
     g_free(cfg->format_cmd);
     cfg->format_cmd = g_key_file_get_string(kf, "config", "format_cmd", NULL);
     /* append blacklist */
@@ -318,6 +322,24 @@ void fm_config_load_from_key_file(FmConfig* cfg, GKeyFile* kf)
     fm_key_file_get_bool(kf, "places", "places_applications", &cfg->places_applications);
     fm_key_file_get_bool(kf, "places", "places_network", &cfg->places_network);
     fm_key_file_get_bool(kf, "places", "places_unmounted", &cfg->places_unmounted);
+}
+
+
+gchar *home_dir (void)
+{
+    char buf[256];
+    FILE *fp = popen ("eval echo ~$SUDO_USER", "r");
+    if (fp == NULL) return NULL;
+    if (fgets (buf, sizeof (buf) - 1, fp) == NULL)
+    {
+        pclose (fp);
+        return NULL;
+    }
+    pclose (fp);
+    if (strlen (buf) > 0) buf[strlen(buf) - 1] = 0;
+    else return NULL;
+    if (buf[0] != '/') return NULL;
+    return g_strdup (buf);
 }
 
 /**
@@ -382,6 +404,13 @@ void fm_config_load_from_file(FmConfig* cfg, const char* name)
     /* we got all system blacklists, save them and get user's one */
     cfg->system_modules_blacklist = cfg->modules_blacklist;
     cfg->modules_blacklist = NULL;
+    gchar *home = home_dir ();
+    if (home)
+    {
+        path = g_build_filename(home, ".config", name, NULL);
+        g_free (home);
+    }
+    else
     path = g_build_filename(g_get_user_config_dir(), name, NULL);
     if(g_key_file_load_from_file(kf, path, 0, NULL))
     {
@@ -463,7 +492,16 @@ void fm_config_save(FmConfig* cfg, const char* name)
     FILE* f;
     GString *str;
     if(!name)
+    {
+        gchar *home = home_dir ();
+        if (home)
+        {
+            name = path = g_build_filename(home, ".config", "libfm/libfm.conf", NULL);
+            g_free (home);
+        }
+        else
         name = path = g_build_filename(g_get_user_config_dir(), "libfm/libfm.conf", NULL);
+    }
     else if(!g_path_is_absolute(name))
         name = path = g_build_filename(g_get_user_config_dir(), name, NULL);
 
@@ -507,6 +545,7 @@ void fm_config_save(FmConfig* cfg, const char* name)
                 _save_config_strv(str, cfg, modules_blacklist);
                 _save_config_strv(str, cfg, modules_whitelist);
                 _save_config_bool(str, cfg, smart_desktop_autodrop);
+                _save_config_bool(str, cfg, cutdown_menus);
             g_string_append(str, "\n[ui]\n");
                 _save_config_int(str, cfg, big_icon_size);
                 _save_config_int(str, cfg, small_icon_size);
