@@ -232,6 +232,7 @@ static void fm_side_pane_init(FmSidePane *sp)
     sp->menu = gtk_ui_manager_get_widget(sp->ui, "/popup");
 
     sp->scroll = gtk_scrolled_window_new(NULL, NULL);
+    gtk_scrolled_window_set_shadow_type((GtkScrolledWindow*)sp->scroll, GTK_SHADOW_IN);
 
     if (!fm_config->cutdown_menus) gtk_box_pack_start(GTK_BOX(sp), sp->title_bar, FALSE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(sp), sp->scroll, TRUE, TRUE, 0);

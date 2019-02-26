@@ -201,6 +201,7 @@ static void fm_standard_view_init(FmStandardView *self)
     gtk_scrolled_window_set_hadjustment((GtkScrolledWindow*)self, NULL);
     gtk_scrolled_window_set_vadjustment((GtkScrolledWindow*)self, NULL);
     gtk_scrolled_window_set_policy((GtkScrolledWindow*)self, GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    gtk_scrolled_window_set_shadow_type((GtkScrolledWindow*)self, GTK_SHADOW_IN);
 
     /* config change notifications */
     g_signal_connect(fm_config, "changed::single_click", G_CALLBACK(on_single_click_changed), self);
