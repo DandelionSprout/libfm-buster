@@ -457,6 +457,7 @@ _not_desktop_entry:
 
         if (!dname)
             dname = g_filename_display_basename(path);
+        if (!fm_file_info_get_disp_name (fi))           // sometimes this is called on a pre-existing file info structure ...
         _fm_path_set_display_name(fi->path, dname);
         g_free(dname);
 
