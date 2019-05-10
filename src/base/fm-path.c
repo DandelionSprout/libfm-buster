@@ -84,6 +84,22 @@ static GSList* roots = NULL;
    members of FmPath struct: disp_name, iter, children */
 G_LOCK_DEFINE_STATIC(roots);
 
+static char* _fm_path_unpretty_basename(FmPath* path)
+{
+    if(G_UNLIKELY(!path->parent)) /* root_path element */
+        return g_strdup(path->name);
+    G_LOCK(roots);
+    if (G_LIKELY(path->disp_name == BASENAME_AS_DISP_NAME))
+    {
+        G_UNLOCK(roots);
+        return g_strdup(path->name);
+    }
+    G_UNLOCK(roots);
+    if(!fm_path_is_native(path))
+        return g_uri_unescape_string(path->name, NULL);
+    return g_filename_display_name(path->name);
+}
+
 static FmPath* _fm_path_alloc(FmPath* parent, int name_len, int flags)
 {
     FmPath* path;
@@ -1012,7 +1028,7 @@ static char *_fm_path_display_name(FmPath* path, gboolean *is_query)
         else if (fm_path_is_native(path))
         {
             disp_parent = _fm_path_display_name(path->parent, is_query);
-            disp_base = fm_path_display_basename(path);
+            disp_base = _fm_path_unpretty_basename(path);
         }
         else if (strchr(path->name, '?') == NULL)
         {
