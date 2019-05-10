@@ -427,7 +427,7 @@ static void fm_dir_tree_model_get_value ( GtkTreeModel *tree_model,
         break;
     case FM_DIR_TREE_MODEL_COL_DISP_NAME:
         if(item->fi)
-            g_value_set_string( value, fm_file_info_get_disp_name(item->fi));
+            g_value_set_string( value, fm_file_info_get_name(item->fi));
         else /* this is a place holder item */
         {
             /* parent is always non NULL. otherwise it's a bug. */
