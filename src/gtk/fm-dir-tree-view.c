@@ -448,8 +448,10 @@ static void emit_chdir_if_needed(FmDirTreeView* view, GtkTreeSelection* tree_sel
         path = fm_file_info_get_path(fi);
         if(path && view->cwd && fm_path_equal(path, view->cwd))
             return;
-        if(!fm_file_info_is_accessible(fi))
-            return;
+        char *cpath = fm_path_to_str (path);
+        gboolean accessible = (g_access(cpath, R_OK) == 0);
+        g_free (cpath);
+        if (!accessible) return;
         if(view->cwd)
             fm_path_unref(view->cwd);
         view->cwd = G_LIKELY(path) ? fm_path_ref(path) : NULL;
