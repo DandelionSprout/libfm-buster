@@ -1089,7 +1089,7 @@ void fm_rename_file(GtkWindow* parent, FmPath* file)
 
     /* NOTE: it's better to use fm_file_info_get_edit_name() to get a name
        but we cannot get it from FmPath */
-    old_name = fm_path_display_basename(file);
+    old_name = g_strdup (fm_path_get_basename(file));
     new_name = fm_get_user_input_rename(parent, _("Rename File"),
                                         _("Please enter a new name:"),
                                         old_name);

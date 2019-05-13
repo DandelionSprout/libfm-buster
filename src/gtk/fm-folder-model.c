@@ -765,7 +765,7 @@ static void fm_folder_model_get_value(GtkTreeModel *tree_model,
         break;
     }
     case FM_FOLDER_MODEL_COL_NAME:
-        g_value_set_string(value, fm_file_info_get_disp_name(info));
+        g_value_set_string(value, fm_file_info_get_name(info));
         break;
     case FM_FOLDER_MODEL_COL_SIZE:
         g_value_set_string( value, fm_file_info_get_disp_size(info) );

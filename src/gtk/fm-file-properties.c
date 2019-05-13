@@ -873,7 +873,7 @@ static void on_response(GtkDialog* dlg, int response, FmFilePropData* data)
         {
             const char *text = gtk_entry_get_text(data->name);
             /* if the user has changed the name of the file */
-            if(g_strcmp0(fm_file_info_get_disp_name(data->fi), text))
+            if(g_strcmp0(fm_file_info_get_name(data->fi), text))
             {
                 /* rename the file or set display name for it. */
                 if (job == NULL)
@@ -1259,7 +1259,7 @@ static void update_ui(FmFilePropData* data)
         struct tm tm;
 
         /* FIXME: use fm_file_info_get_edit_name */
-        text = fm_file_info_get_disp_name(data->fi);
+        text = fm_file_info_get_name(data->fi);
         gtk_entry_set_text(data->name, text);
         if(strlen(text) > 16)
             gtk_widget_set_tooltip_text(GTK_WIDGET(data->name), text);
