@@ -71,6 +71,7 @@ typedef struct _FmConfigClass       FmConfigClass;
 #define     FM_CONFIG_DEFAULT_QUICK_EXEC        FALSE
 #define     FM_CONFIG_DEFAULT_SMART_DESKTOP_AUTODROP TRUE
 #define     FM_CONFIG_DEFAULT_CUTDOWN_MENUS     FALSE
+#define     FM_CONFIG_DEFAULT_CUTDOWN_PLACES    TRUE
 
 #define     FM_CONFIG_DEFAULT_PLACES_HOME       TRUE
 #define     FM_CONFIG_DEFAULT_PLACES_DESKTOP    TRUE
@@ -197,6 +198,7 @@ struct _FmConfig
     gboolean defer_content_test;
     gboolean quick_exec;
     gboolean cutdown_menus;
+    gboolean cutdown_places;
 
     gchar **modules_blacklist;
     gchar **modules_whitelist;

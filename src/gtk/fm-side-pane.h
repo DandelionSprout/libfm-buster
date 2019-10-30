@@ -59,6 +59,7 @@ typedef enum
     FM_SP_NONE,
     FM_SP_PLACES,
     FM_SP_DIR_TREE,
+    FM_SP_HYBRID,
     FM_SP_REMOTE
 }FmSidePaneMode;
 
@@ -89,6 +90,8 @@ struct _FmSidePane
     GtkWidget* FM_SEAL(menu);
     GtkWidget* FM_SEAL(scroll);
     GtkWidget* FM_SEAL(view);
+    GtkWidget* FM_SEAL(view2);
+    GtkWidget* FM_SEAL(box);
     FmSidePaneMode FM_SEAL(mode);
     GtkUIManager* FM_SEAL(ui);
     FmSidePaneUpdatePopup FM_SEAL(update_popup);
