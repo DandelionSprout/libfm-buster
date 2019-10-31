@@ -235,6 +235,7 @@ static void fm_side_pane_init(FmSidePane *sp)
     gtk_scrolled_window_set_shadow_type((GtkScrolledWindow*)sp->scroll, GTK_SHADOW_IN);
 
     if (!fm_config->cutdown_menus) gtk_box_pack_start(GTK_BOX(sp), sp->title_bar, FALSE, TRUE, 0);
+    else gtk_box_set_spacing (GTK_BOX (sp), 5);
     gtk_box_pack_start(GTK_BOX(sp), sp->scroll, TRUE, TRUE, 0);
     gtk_widget_show_all(GTK_WIDGET(sp));
 }
@@ -294,8 +295,8 @@ void fm_side_pane_chdir(FmSidePane* sp, FmPath* path)
         fm_dir_tree_view_chdir(FM_DIR_TREE_VIEW(sp->view), path);
         break;
     case FM_SP_HYBRID:
-        fm_places_view_chdir(FM_PLACES_VIEW(sp->view), path);
-        fm_dir_tree_view_chdir(FM_DIR_TREE_VIEW(sp->view2), path);
+        fm_places_view_chdir(FM_PLACES_VIEW(sp->view2), path);
+        fm_dir_tree_view_chdir(FM_DIR_TREE_VIEW(sp->view), path);
         break;
     default:
         break;
@@ -370,8 +371,8 @@ static void fm_side_pane_dispose(GObject *object)
                 g_signal_handlers_disconnect_by_func(sp->view, on_item_popup, sp);
                 g_signal_handlers_disconnect_by_func(sp->view2, on_item_popup, sp);
             }
-            g_signal_handlers_disconnect_by_func(sp->view, on_places_chdir, sp);
-            g_signal_handlers_disconnect_by_func(sp->view2, on_dirtree_chdir, sp);
+            g_signal_handlers_disconnect_by_func(sp->view, on_dirtree_chdir, sp);
+            g_signal_handlers_disconnect_by_func(sp->view2, on_places_chdir, sp);
             gtk_widget_destroy(sp->view2);
             sp->view2 = NULL;
             break;
@@ -406,9 +407,6 @@ static void init_dir_tree(FmSidePane* sp)
         }
         g_object_unref(job);
 
-    if (sp->mode == FM_SP_HYBRID)
-    gtk_tree_view_set_model(GTK_TREE_VIEW(sp->view2), GTK_TREE_MODEL(dir_tree_model));
-    else
     gtk_tree_view_set_model(GTK_TREE_VIEW(sp->view), GTK_TREE_MODEL(dir_tree_model));
     g_object_unref(dir_tree_model);
 }
@@ -440,40 +438,42 @@ void fm_side_pane_set_mode(FmSidePane* sp, FmSidePaneMode mode)
         gtk_widget_destroy (sp->view2);
         gtk_widget_destroy (sp->box);
         sp->view2 = NULL;
-        sp->box = NULL;
-        // remove the viewport...
-        gtk_container_remove (GTK_CONTAINER(sp->scroll), gtk_container_get_children (GTK_CONTAINER(sp->scroll))->data);
     }
 
     sp->mode = mode;
 
     if (mode == FM_SP_HYBRID)
     {
-        sp->box = gtk_vbox_new (FALSE, 2);
-
-        /* create places view */
-        sp->view = (GtkWidget*) fm_places_view_new ();
-        fm_places_view_chdir (FM_PLACES_VIEW (sp->view), sp->cwd);
-        g_signal_connect (sp->view, "chdir", G_CALLBACK (on_places_chdir), sp);
+        /* create a dir tree */
+        sp->view = (GtkWidget*) fm_dir_tree_view_new ();
+        init_dir_tree (sp);
+        fm_dir_tree_view_chdir (FM_DIR_TREE_VIEW (sp->view), sp->cwd);
+        gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sp->scroll),
+                GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+        g_signal_connect (sp->view, "chdir", G_CALLBACK (on_dirtree_chdir), sp);
         if (sp->update_popup)
             g_signal_connect (sp->view, "item-popup", G_CALLBACK (on_item_popup), sp);
         gtk_widget_show (sp->view);
-        gtk_box_pack_start (GTK_BOX (sp->box), sp->view, FALSE, 0, 0);
+        gtk_container_add(GTK_CONTAINER(sp->scroll), sp->view);
 
-        /* create a dir tree */
-        sp->view2 = (GtkWidget*) fm_dir_tree_view_new ();
-        init_dir_tree (sp);
-        fm_dir_tree_view_chdir (FM_DIR_TREE_VIEW (sp->view2), sp->cwd);
-        g_signal_connect (sp->view2, "chdir", G_CALLBACK (on_dirtree_chdir), sp);
+        /* create places view */
+        sp->view2 = (GtkWidget*) fm_places_view_new ();
+        fm_places_view_chdir (FM_PLACES_VIEW (sp->view2), sp->cwd);
+        g_signal_connect (sp->view2, "chdir", G_CALLBACK (on_places_chdir), sp);
         if (sp->update_popup)
             g_signal_connect (sp->view2, "item-popup", G_CALLBACK (on_item_popup), sp);
-        gtk_widget_show (sp->view2);
-        gtk_box_pack_start (GTK_BOX (sp->box), sp->view2, FALSE, 0, 0);
 
-        gtk_widget_show (sp->box);
-        gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (sp->scroll), sp->box);
-        gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sp->scroll),
-                GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+        /* create a non-scrolling scrolled window to put it in... */
+        sp->box = gtk_scrolled_window_new (NULL, NULL);
+        gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sp->box),
+                GTK_POLICY_NEVER, GTK_POLICY_NEVER);
+        gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (sp->box), GTK_SHADOW_IN);
+
+        /* prepend the places view to the sidebar */
+        gtk_container_add (GTK_CONTAINER(sp->box), sp->view2);
+        gtk_widget_show_all (sp->box);
+        gtk_box_pack_start (GTK_BOX (sp), sp->box, FALSE, 0, 0);
+        gtk_box_reorder_child (GTK_BOX (sp), sp->box, 0);
 
         g_signal_emit (sp, signals[MODE_CHANGED], 0);
         return;
