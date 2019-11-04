@@ -183,7 +183,7 @@ static void on_file_info_job_finished(FmFileInfoJob* job, gpointer user_data)
                         fm_file_info_unref(item->fi);
                         item->fi = fm_file_info_ref(fi);
                         /* only update the icon if the item is not a volume or mount. */
-                        if(item->type == FM_PLACES_ITEM_PATH)
+                        if(item->type == FM_PLACES_ITEM_PATH && !fm_path_equal (path, fm_path_get_root()))
                         {
                             icon = fm_file_info_get_icon(fi);
                             /* replace the icon with updated data */
