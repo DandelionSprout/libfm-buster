@@ -291,6 +291,7 @@ void fm_config_load_from_key_file(FmConfig* cfg, GKeyFile* kf)
     fm_key_file_get_bool(kf, "config", "smart_desktop_autodrop", &cfg->smart_desktop_autodrop);
     fm_key_file_get_bool(kf, "config", "cutdown_menus", &cfg->cutdown_menus);
     fm_key_file_get_bool(kf, "config", "cutdown_places", &cfg->cutdown_places);
+    fm_key_file_get_bool(kf, "config", "real_expanders", &cfg->real_expanders);
     g_free(cfg->format_cmd);
     cfg->format_cmd = g_key_file_get_string(kf, "config", "format_cmd", NULL);
     /* append blacklist */
@@ -549,6 +550,7 @@ void fm_config_save(FmConfig* cfg, const char* name)
                 _save_config_bool(str, cfg, smart_desktop_autodrop);
                 _save_config_bool(str, cfg, cutdown_menus);
                 _save_config_bool(str, cfg, cutdown_places);
+                _save_config_bool(str, cfg, real_expanders);
             g_string_append(str, "\n[ui]\n");
                 _save_config_int(str, cfg, big_icon_size);
                 _save_config_int(str, cfg, small_icon_size);
