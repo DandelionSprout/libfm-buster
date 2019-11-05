@@ -176,6 +176,7 @@ static void fm_config_init(FmConfig *self)
     self->places_applications = FM_CONFIG_DEFAULT_PLACES_APPLICATIONS;
     self->places_network = FM_CONFIG_DEFAULT_PLACES_NETWORK;
     self->places_unmounted = FM_CONFIG_DEFAULT_PLACES_UNMOUNTED;
+    self->places_volmounts = FM_CONFIG_DEFAULT_PLACES_VOLMOUNTS;
     self->smart_desktop_autodrop = FM_CONFIG_DEFAULT_SMART_DESKTOP_AUTODROP;
     self->cutdown_menus = FM_CONFIG_DEFAULT_CUTDOWN_MENUS;
     self->cutdown_places = FM_CONFIG_DEFAULT_CUTDOWN_PLACES;
@@ -325,6 +326,7 @@ void fm_config_load_from_key_file(FmConfig* cfg, GKeyFile* kf)
     fm_key_file_get_bool(kf, "places", "places_applications", &cfg->places_applications);
     fm_key_file_get_bool(kf, "places", "places_network", &cfg->places_network);
     fm_key_file_get_bool(kf, "places", "places_unmounted", &cfg->places_unmounted);
+    fm_key_file_get_bool(kf, "places", "places_volmounts", &cfg->places_volmounts);
 }
 
 
@@ -571,6 +573,7 @@ void fm_config_save(FmConfig* cfg, const char* name)
                 _save_config_bool(str, cfg, places_applications);
                 _save_config_bool(str, cfg, places_network);
                 _save_config_bool(str, cfg, places_unmounted);
+                _save_config_bool(str, cfg, places_volmounts);
             fwrite(str->str, 1, str->len, f);
             fclose(f);
             g_string_free(str, TRUE);

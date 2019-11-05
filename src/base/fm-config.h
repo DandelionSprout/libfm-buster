@@ -82,6 +82,7 @@ typedef struct _FmConfigClass       FmConfigClass;
 #define     FM_CONFIG_DEFAULT_PLACES_APPLICATIONS TRUE
 #define     FM_CONFIG_DEFAULT_PLACES_NETWORK    FALSE
 #define     FM_CONFIG_DEFAULT_PLACES_UNMOUNTED  TRUE
+#define     FM_CONFIG_DEFAULT_PLACES_VOLMOUNTS  TRUE
 
 #define     FM_CONFIG_DEFAULT_AUTO_SELECTION_DELAY 600
 
@@ -192,6 +193,7 @@ struct _FmConfig
     gboolean places_computer;
     gboolean places_network;
     gboolean places_unmounted;
+    gboolean places_volmounts;
 
     gboolean only_user_templates;
     gboolean template_run_app;
