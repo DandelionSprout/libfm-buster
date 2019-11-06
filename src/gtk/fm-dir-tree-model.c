@@ -654,10 +654,10 @@ gboolean has_subdirs (FmFileInfo *fi)
             char *test = g_strdup_printf ("%s/%s", rpath, sub);
             result = g_file_test (test, G_FILE_TEST_IS_DIR);
             g_free (test);
-            if (result) goto done;
+            if (result) break;
         }
     }
-done:
+
     if (dir) g_free (dir);
     g_free (rpath);
     return result;
