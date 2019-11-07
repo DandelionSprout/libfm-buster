@@ -711,7 +711,7 @@ static GList* insert_item(FmDirTreeModel* model, GList* parent_l, GtkTreePath* t
             add_place_holder_child_item (model, new_item_l, new_tp, TRUE);
     }
     else
-    if(!fm_config->no_child_non_expandable || fm_file_info_is_accessible(new_item->fi))
+    if(fm_config->cutdown_menus || !fm_config->no_child_non_expandable || fm_file_info_is_accessible(new_item->fi))
         add_place_holder_child_item(model, new_item_l, new_tp, TRUE);
     gtk_tree_path_free(new_tp);
 
@@ -768,7 +768,7 @@ static void remove_item_l(FmDirTreeModel* model, GList* item_l)
                 item_to_tree_iter(model, parent_l, &it);
                 gtk_tree_model_row_has_child_toggled(GTK_TREE_MODEL(model), tp, &it);
             } else
-            if(fm_config->no_child_non_expandable)
+            if(!fm_config->cutdown_menus && fm_config->no_child_non_expandable)
             {
                 GtkTreeIter it;
                 item_to_tree_iter(model, parent_l, &it);
