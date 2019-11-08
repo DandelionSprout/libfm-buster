@@ -76,6 +76,8 @@ GType       fm_places_view_get_type     (void);
 FmPlacesView* fm_places_view_new          (void);
 void fm_places_view_chdir(FmPlacesView* pv, FmPath* path);
 
+void fm_places_reload (void);
+
 G_END_DECLS
 
 #endif /* __FM_PLACES_VIEW_H__ */

@@ -1023,6 +1023,97 @@ static void on_places_volmounts_changed (FmConfig* cfg, gpointer user_data)
     g_list_free (mnts);
 }
 
+static gboolean _clear_item (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, gpointer data)
+{
+    FmPlacesItem *item;
+    gtk_tree_model_get (model, iter, FM_PLACES_MODEL_COL_INFO, &item, -1);
+    if (item) place_item_free (item);
+    return FALSE;
+}
+
+void fm_places_model_reload (FmPlacesModel *self)
+{
+    GtkTreeIter it;
+    GList *vols, *l;
+    FmPath *path;
+    GtkListStore* model = &self->parent;
+    FmFileInfoJob* job = fm_file_info_job_new (NULL, FM_FILE_INFO_JOB_FOLLOW_SYMLINK);
+
+    // clear the places list store before reloading
+    gtk_tree_model_foreach (GTK_TREE_MODEL (model), _clear_item, NULL);
+    gtk_list_store_clear (model);
+
+    if (fm_config->places_home)
+        new_path_item (model, &it, fm_path_get_home (), FM_PLACES_ID_HOME, _("Home Folder"), "user-home", job);
+
+    if (fm_config->places_desktop && g_file_test (g_get_user_special_dir(G_USER_DIRECTORY_DESKTOP), G_FILE_TEST_IS_DIR))
+        new_path_item (model, &it, fm_path_get_desktop (), FM_PLACES_ID_DESKTOP, _("Desktop"), "user-desktop", job);
+
+    if (fm_config->places_root)
+        new_path_item (model, &it, fm_path_get_root (), FM_PLACES_ID_ROOT, _("Filesystem Root"), "drive-harddisk", job);
+
+    if (fm_config->places_computer)
+    {
+        path = fm_path_new_for_uri ("computer:///");
+        new_path_item (model, &it, path, FM_PLACES_ID_COMPUTER, _("Devices"), "computer", job);
+        fm_path_unref (path);
+    }
+
+    if (fm_config->places_applications && fm_module_is_in_use ("vfs", "menu"))
+        new_path_item (model, &it, fm_path_get_apps_menu (), FM_PLACES_ID_APPLICATIONS, _("Applications"), "system-software-install", job);
+
+    if (fm_config->places_network)
+    {
+        path = fm_path_new_for_uri ("network:///");
+        new_path_item (model, &it, path, FM_PLACES_ID_NETWORK, _("Network"), GTK_STOCK_NETWORK, job);
+        fm_path_unref (path);
+    }
+
+    gtk_list_store_append (model, &it);
+    GtkTreePath* tp = gtk_tree_model_get_path (GTK_TREE_MODEL (self), &it);
+    self->separator = gtk_tree_row_reference_new (GTK_TREE_MODEL (self), tp);
+    gtk_tree_path_free (tp);
+
+    if (fm_config->use_trash && fm_config->places_trash) create_trash_item (self);
+
+    if (fm_config->places_volmounts)
+    {
+        if (fm_config->places_unmounted)
+        {
+            vols = g_volume_monitor_get_volumes (self->vol_mon);
+            for (l = vols; l; l = l->next)
+            {
+                GVolume* vol = G_VOLUME (l->data);
+                add_volume_or_mount (self, G_OBJECT(vol), job);
+                g_object_unref (vol);
+            }
+            g_list_free (vols);
+        }
+
+        vols = g_volume_monitor_get_mounts (self->vol_mon);
+        for(l = vols; l; l = l->next)
+        {
+            GMount* mount = G_MOUNT (l->data);
+            GVolume* volume = g_mount_get_volume (mount);
+            if (volume) g_object_unref (volume);
+            else add_volume_or_mount (self, G_OBJECT (mount), job);
+            g_object_unref (mount);
+        }
+        g_list_free (vols);
+    }
+
+    add_bookmarks (self, job);
+
+    g_signal_connect (job, "finished", G_CALLBACK (on_file_info_job_finished), self);
+    self->jobs = g_slist_prepend (self->jobs, job);
+    if (!fm_job_run_async (FM_JOB (job)))
+    {
+        self->jobs = g_slist_remove (self->jobs, job);
+        g_object_unref (job);
+        g_critical ("fm_job_run_async() failed on places view init");
+    }
+}
+
 static void fm_places_model_init(FmPlacesModel *self)
 {
     GType types[] = {GDK_TYPE_PIXBUF, G_TYPE_STRING, G_TYPE_POINTER};

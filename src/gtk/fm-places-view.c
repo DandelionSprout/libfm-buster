@@ -194,6 +194,11 @@ static void on_cell_renderer_pixbuf_destroy(gpointer user_data, GObject* render)
     g_signal_handler_disconnect(fm_config, GPOINTER_TO_UINT(user_data));
 }
 
+void fm_places_reload (void)
+{
+    if (model) fm_places_model_reload (model);
+}
+
 /*----------------------------------------------------------------------
    Drag source is handled by model which implements GtkTreeDragSource */
 

@@ -119,6 +119,8 @@ FmPath* fm_places_item_get_path(FmPlacesItem* item);
 
 FmBookmarkItem* fm_places_item_get_bookmark_item(FmPlacesItem* item);
 
+void fm_places_model_reload (FmPlacesModel *model);
+
 G_END_DECLS
 
 #endif /* __FM_PLACES_MODEL_H__ */
