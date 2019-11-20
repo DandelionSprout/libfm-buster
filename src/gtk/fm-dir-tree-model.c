@@ -658,7 +658,7 @@ gboolean has_subdirs (FmFileInfo *fi)
         }
     }
 
-    if (dir) g_free (dir);
+    if (dir) g_dir_close (dir);
     g_free (rpath);
     return result;
 }
