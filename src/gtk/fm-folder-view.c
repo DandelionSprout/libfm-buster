@@ -100,6 +100,7 @@
 
 static const char folder_popup_xml[] =
 "<popup>"
+  "<menuitem action='CreateNewFolder'/>"
   "<menu action='CreateNew'>"
     "<menuitem action='NewFolder'/>"
     /* placeholder for ~/Templates support */
@@ -176,6 +177,7 @@ static void on_ignore_case(GtkToggleAction* act, FmFolderView* fv);
 static const GtkActionEntry folder_popup_actions[]=
 {
     {"CreateNew", NULL, N_("Create _New..."), NULL, NULL, NULL},
+    {"CreateNewFolder", "folder", N_("Create New _Folder..."), "<Ctrl><Shift>N", NULL, G_CALLBACK(on_create_new)},
     {"NewFolder", "folder", N_("Folder"), "<Ctrl><Shift>N", NULL, G_CALLBACK(on_create_new)},
     {"NewFolder2", NULL, NULL, "Insert", NULL, G_CALLBACK(on_create_new)},
     {"NewFolder3", NULL, NULL, "KP_Insert", NULL, G_CALLBACK(on_create_new)},
@@ -839,7 +841,7 @@ static void on_create_new(GtkAction* act, FmFolderView* fv)
     gint n;
 
     g_return_if_fail(ui != NULL);
-    if(strncmp(name, "NewFolder", 9) == 0)
+    if(strstr(name, "NewFolder"))
     {
         templ = NULL;
         prompt = _("Enter a name for the newly created folder:");
@@ -1229,9 +1231,17 @@ static void on_menu(GtkAction* act, FmFolderView* fv)
        That will take some time, memory and may be error-prone as well.
        For simplicity we create it once here but if users will find
        any inconveniences this behavior should be changed later. */
+    if (fm_config->cutdown_menus)
+        act = gtk_ui_manager_get_action(ui, "/popup/CreateNew");
+    else
+        act = gtk_ui_manager_get_action(ui, "/popup/CreateNewFolder");
+    gtk_action_set_visible(act, FALSE);
     if(fi == NULL || !fm_file_info_is_writable_directory(fi))
     {
-        act = gtk_ui_manager_get_action(ui, "/popup/CreateNew");
+        if (fm_config->cutdown_menus)
+            act = gtk_ui_manager_get_action(ui, "/popup/CreateNewFolder");
+        else
+            act = gtk_ui_manager_get_action(ui, "/popup/CreateNew");
         gtk_action_set_visible(act, FALSE);
     }
     else if(!templates)
