@@ -177,7 +177,7 @@ static void on_ignore_case(GtkToggleAction* act, FmFolderView* fv);
 static const GtkActionEntry folder_popup_actions[]=
 {
     {"CreateNew", NULL, N_("Create _New..."), NULL, NULL, NULL},
-    {"CreateNewFolder", "folder", N_("Create New _Folder..."), "<Ctrl><Shift>N", NULL, G_CALLBACK(on_create_new)},
+    {"CreateNewFolder", "folder", N_("New _Folder..."), "<Ctrl><Shift>N", NULL, G_CALLBACK(on_create_new)},
     {"NewFolder", "folder", N_("Folder"), "<Ctrl><Shift>N", NULL, G_CALLBACK(on_create_new)},
     {"NewFolder2", NULL, NULL, "Insert", NULL, G_CALLBACK(on_create_new)},
     {"NewFolder3", NULL, NULL, "KP_Insert", NULL, G_CALLBACK(on_create_new)},
