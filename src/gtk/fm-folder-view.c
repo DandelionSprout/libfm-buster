@@ -101,6 +101,7 @@
 static const char folder_popup_xml[] =
 "<popup>"
   "<menuitem action='CreateNewFolder'/>"
+  "<menuitem action='CreateNewFile'/>"
   "<menu action='CreateNew'>"
     "<menuitem action='NewFolder'/>"
     /* placeholder for ~/Templates support */
@@ -178,6 +179,7 @@ static const GtkActionEntry folder_popup_actions[]=
 {
     {"CreateNew", NULL, N_("Create _New..."), NULL, NULL, NULL},
     {"CreateNewFolder", "folder", N_("New _Folder..."), "<Ctrl><Shift>N", NULL, G_CALLBACK(on_create_new)},
+    {"CreateNewFile", NULL, N_("New F_ile..."), "<Ctrl><Alt>N", NULL, G_CALLBACK(on_create_new)},
     {"NewFolder", "folder", N_("Folder"), "<Ctrl><Shift>N", NULL, G_CALLBACK(on_create_new)},
     {"NewFolder2", NULL, NULL, "Insert", NULL, G_CALLBACK(on_create_new)},
     {"NewFolder3", NULL, NULL, "KP_Insert", NULL, G_CALLBACK(on_create_new)},
@@ -855,7 +857,7 @@ static void on_create_new(GtkAction* act, FmFolderView* fv)
             return; /* invalid action name, is it possible? */
     }
     /* special option 'NewBlank' */
-    else if(G_LIKELY(strcmp(name, "NewBlank") == 0))
+    else if(G_LIKELY(strcmp(name, "NewBlank") == 0) || G_LIKELY(strcmp(name, "CreateNewFile") == 0))
     {
         templ = NULL;
         prompt = _("Enter a name for empty file:");
@@ -1232,17 +1234,31 @@ static void on_menu(GtkAction* act, FmFolderView* fv)
        For simplicity we create it once here but if users will find
        any inconveniences this behavior should be changed later. */
     if (fm_config->cutdown_menus)
+    {
         act = gtk_ui_manager_get_action(ui, "/popup/CreateNew");
+        gtk_action_set_visible(act, FALSE);
+    }
     else
+    {
         act = gtk_ui_manager_get_action(ui, "/popup/CreateNewFolder");
-    gtk_action_set_visible(act, FALSE);
+        gtk_action_set_visible(act, FALSE);
+        act = gtk_ui_manager_get_action(ui, "/popup/CreateNewFile");
+        gtk_action_set_visible(act, FALSE);
+    }
     if(fi == NULL || !fm_file_info_is_writable_directory(fi))
     {
         if (fm_config->cutdown_menus)
+        {
             act = gtk_ui_manager_get_action(ui, "/popup/CreateNewFolder");
+            gtk_action_set_visible(act, FALSE);
+            act = gtk_ui_manager_get_action(ui, "/popup/CreateNewFile");
+            gtk_action_set_visible(act, FALSE);
+        }
         else
+        {
             act = gtk_ui_manager_get_action(ui, "/popup/CreateNew");
-        gtk_action_set_visible(act, FALSE);
+            gtk_action_set_visible(act, FALSE);
+        }
     }
     else if(!templates)
     {

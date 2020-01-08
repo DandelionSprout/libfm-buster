@@ -1020,7 +1020,7 @@ msgstr "By File _Type"
 
 #: ../src/gtk/fm-folder-view.c:845
 msgid "Enter a name for the newly created folder:"
-msgstr "Enter a name for the newly created folder:"
+msgstr "Enter a name for the new folder:"
 
 #: ../src/gtk/fm-folder-view.c:846
 #, fuzzy
@@ -1029,11 +1029,11 @@ msgstr "Rename File"
 
 #: ../src/gtk/fm-folder-view.c:859
 msgid "Enter a name for empty file:"
-msgstr "Enter a name for empty file:"
+msgstr "Enter a name for the new file:"
 
 #: ../src/gtk/fm-folder-view.c:860
 msgid "Creating ..."
-msgstr "Creating ..."
+msgstr "Creating New File"
 
 #: ../src/gtk/fm-folder-view.c:866
 msgid "New"
