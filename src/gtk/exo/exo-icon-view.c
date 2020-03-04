@@ -1070,10 +1070,10 @@ exo_icon_view_class_init (ExoIconViewClass *klass)
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (ExoIconViewClass, item_activated),
                   NULL, NULL,
-                  g_cclosure_marshal_VOID__UINT_POINTER,
+                  _exo_marshal_VOID__POINTER_INT,
                   G_TYPE_NONE, 2,
                   GTK_TYPE_TREE_PATH,
-                  G_TYPE_UINT);
+                  G_TYPE_INT);
 
   /**
    * ExoIconView::selection-changed:
