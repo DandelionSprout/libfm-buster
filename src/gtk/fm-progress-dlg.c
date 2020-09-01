@@ -267,7 +267,7 @@ static gint on_ask_rename(FmFileOpsJob* job, FmFileInfo* src, FmFileInfo* dest, 
         gtk_widget_destroy(widget);
     }
 
-    tmp = g_filename_display_name(fm_path_get_basename(path));
+    tmp = g_filename_display_name(fm_path_display_basename(path));
     gtk_entry_set_text(filename, tmp);
     g_object_set_data_full(G_OBJECT(filename), "old_name", tmp, g_free);
     g_signal_connect(filename, "changed", G_CALLBACK(on_filename_changed), gtk_builder_get_object(builder, "rename"));
